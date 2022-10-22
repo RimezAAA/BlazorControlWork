@@ -1,0 +1,52 @@
+﻿@page "/registration"
+@using BlazorControlWork.Data
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+<form>
+  <div class="mb-3">
+    <label for="exampleInputName1" class="form-label">Name</label>
+    <input class="form-control" id="exampleInputName1" @bind-value="@Name">
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputSuname1" class="form-label">Surname</label>
+    <input class="form-control" id="exampleInputSuname1" @bind-value="@Surname">
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" @bind-value="@Email">
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputLogin1" class="form-label">Login</label>
+    <input class="form-control" id="exampleInputLogin1" @bind-value="@Login">
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1" @bind-value="@Password">
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword2" class="form-label">Return Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword2" @bind-value="@Password2">
+  </div>
+  <button type="submit" class="btn btn-primary" @onclick="@CreateUsers">Reg</button>
+</form>
+
+@code {
+    private string Name = "";
+    private string Surname = "";
+    private string Email = "";
+    private string Login = "";
+    private string Password = "";
+    private string Password2 = "";
+
+    private void CreateUsers()
+    {
+        if (Name != "" && Surname != "" && Email != "" && Login != "" && Password != "" && Password2 != "" && Password == Password2)
+        {
+            User user = new User(Name, Surname, Email, Password, Login);
+            UserService.user = user;
+            UserService.authorizationCheck = true;
+            MongoExamples.AddToDB(user);
+            NavigationManager.NavigateTo("/profil");
+        }
+    }
+}

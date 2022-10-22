@@ -1,0 +1,34 @@
+﻿@using BlazorControlWork.Data
+@inherits LayoutComponentBase
+@inject UserService UserService
+
+<PageTitle>BlazorControlWork</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if (!UserService.authorizationCheck)
+            {
+                <a href="authorization">Authorization</a>
+                <a href="registration">Registration</a>
+            }
+            else
+            {
+                <a href="profil">@UserService.user.Name</a>
+            }
+            
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code{
+
+}

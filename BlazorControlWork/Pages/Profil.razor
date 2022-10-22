@@ -1,0 +1,22 @@
+﻿@page "/profil"
+@using BlazorControlWork.Data
+@inject UserService UserService
+@inject NavigationManager NavigationManager
+
+<label>Name:</label>
+<label>@UserService.user.Name</label>
+<br />
+<label>Login:</label>
+<label>@UserService.user.Login</label>
+<br />
+<label>Email:</label>
+<label>@UserService.user.Email</label>
+<br />
+<button @onclick="LogOut">Log out</button>
+@code {
+    private void LogOut()
+    {
+        UserService.authorizationCheck = false;
+        NavigationManager.NavigateTo("/authorization");
+    }
+}
