@@ -1,9 +1,8 @@
 ﻿@page "/authorization"
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 @inject UserService UserService
 @using BlazorControlWork.Data
 <div class="form">
-<form class="form-horizontal" role="form">
   <div class="form-group">
     <div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">Логин</label>
@@ -23,21 +22,45 @@
       <button type="submit" class="btn btn-default btn-sm" @onclick="AuthorizatioMethod">Войти</button>
     </div>
   </div>  
-</form>
 </div>
 
+@if (CheckError)
+{
+    <div class="layer1">
+        <h6>@strError</h6>
+    </div>
+}
+
+
 @code {
-    private string Login = "";
-    private string Password = "";
+    private string Login;
+    private string Password;
+
+    private bool CheckError;
+    private string strError = "Неизвестная ошибка";
 
     private void AuthorizatioMethod()
     {
-        User user = MongoExamples.Find(Login, Password);
+        User user = MongoExamples.Find(Login);
         if (user != null)
         {
-            UserService.user = user;
-            UserService.authorizationCheck = true;
-            NavigationManager.NavigateTo("/profil");
+            if (Password == user.Password)
+            {
+                UserService.user = user;
+                UserService.authorizationCheck = true;
+                Navigation.NavigateTo("/profil");
+            }
+            else
+            {
+                CheckError = true;
+                strError = "Неверный пароль";
+            }
+
+        }
+        else
+        {
+            CheckError = true;
+            strError = "Пользователя с таким логином не найдено";
         }
     }
 }

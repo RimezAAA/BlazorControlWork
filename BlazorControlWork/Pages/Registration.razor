@@ -2,7 +2,6 @@
 @using BlazorControlWork.Data
 @inject NavigationManager NavigationManager
 @inject UserService UserService
-<form>
   <div class="mb-3">
     <label for="exampleInputName1" class="form-label">Name</label>
     <input class="form-control" id="exampleInputName1" @bind-value="@Name">
@@ -28,7 +27,6 @@
     <input type="password" class="form-control" id="exampleInputPassword2" @bind-value="@Password2">
   </div>
   <button type="submit" class="btn btn-primary" @onclick="@CreateUsers">Reg</button>
-</form>
 
 @code {
     private string Name = "";

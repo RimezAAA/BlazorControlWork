@@ -21,12 +21,12 @@ namespace BlazorControlWork.Data
             return list;
         }
 
-        public static User Find(string login, string password)
+        public static User Find(string login)
         {
             var client = new MongoClient();
             var database = client.GetDatabase("UsersDataBaseArt");
             var collection = database.GetCollection<User>("Users");
-            var one = collection.Find(x => x.Login == login && x.Password == password).FirstOrDefault();
+            var one = collection.Find(x => x.Login == login).FirstOrDefault();
             return one;
         }
     }
