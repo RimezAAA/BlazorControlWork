@@ -20,12 +20,12 @@
     <br />
     <InputFile OnChange="@LoadFiles"/>
     <br />
-    <label>@peek</label>
+    <label>@strException</label>
 </div>
 
 
 @code {
-    string peek;
+    string strException;
     string srcPath;
 
     private void LogOut()
@@ -46,7 +46,7 @@
         }
         catch (Exception ex)
         {
-            peek = $"{ex.Message}";
+            strException = $"{ex.Message}";
         }
     }
 }
