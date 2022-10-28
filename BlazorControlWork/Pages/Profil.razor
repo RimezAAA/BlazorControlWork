@@ -5,7 +5,14 @@
 @inject IWebHostEnvironment Environment
 
 <div>
-    <img src="@srcPath" class="fit-picture" />
+    @if (UserService.user.pathImg != string.Empty)
+    {
+        <img src="@UserService.user.pathImg" class="fit-picture" />
+    }
+    else
+    {
+        <img src="@srcPath" class="fit-picture" />
+    }
     <br />
     <label>Name:</label>
     <label>@UserService.user.Name</label>
@@ -43,6 +50,8 @@
             await e.File.OpenReadStream().CopyToAsync(fs);
             FileSystemService.UploadImageToDb(e.File.Name, fs);
             srcPath = "images\\" + $"{e.File.Name}";
+            UserService.user.pathImg = srcPath;
+            MongoExamples.ReplaceByName(UserService.user.Login, UserService.user);
         }
         catch (Exception ex)
         {
