@@ -2,21 +2,51 @@
 @using BlazorControlWork.Data
 @inject UserService UserService
 @inject NavigationManager NavigationManager
+@inject IWebHostEnvironment Environment
 
-<label>Name:</label>
-<label>@UserService.user.Name</label>
-<br />
-<label>Login:</label>
-<label>@UserService.user.Login</label>
-<br />
-<label>Email:</label>
-<label>@UserService.user.Email</label>
-<br />
-<button @onclick="LogOut">Log out</button>
+<div>
+    <img src="@srcPath" class="fit-picture" />
+    <br />
+    <label>Name:</label>
+    <label>@UserService.user.Name</label>
+    <br />
+    <label>Login:</label>
+    <label>@UserService.user.Login</label>
+    <br />
+    <label>Email:</label>
+    <label>@UserService.user.Email</label>
+    <br />
+    <button @onclick="LogOut">Log out</button>
+    <br />
+    <InputFile OnChange="@LoadFiles"/>
+    <br />
+    <label>@peek</label>
+</div>
+
+
 @code {
+    string peek;
+    string srcPath;
+
     private void LogOut()
     {
         UserService.authorizationCheck = false;
         NavigationManager.NavigateTo("/authorization");
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var path = Path.Combine(Environment.ContentRootPath, "wwwroot", "images" , e.File.Name);
+            await using FileStream fs = new(path, FileMode.Create);
+            await e.File.OpenReadStream().CopyToAsync(fs);
+            FileSystemService.UploadImageToDb(e.File.Name, fs);
+            srcPath = "images\\" + $"{e.File.Name}";
+        }
+        catch (Exception ex)
+        {
+            peek = $"{ex.Message}";
+        }
     }
 }
