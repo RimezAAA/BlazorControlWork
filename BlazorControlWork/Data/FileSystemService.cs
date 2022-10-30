@@ -5,22 +5,26 @@ namespace BlazorControlWork.Data
 {
     public static class FileSystemService
     {
-        static public void UploadImageToDb(string filename, FileStream fs)
+        static public void UploadImageToDb(string filename, string path)
         {
             var client = new MongoClient("mongodb://localhost");
             var database = client.GetDatabase("Images321");
             var gridFS = new GridFSBucket(database);
-            gridFS.UploadFromStream(filename, fs);
+            using (FileStream fs = new FileStream(path, FileMode.Open))
+            {
+                gridFS.UploadFromStream(filename, fs);
+            }
+            
         }
 
-        static public void DownloadToLocal()
+        static public void DownloadToLocal(User user, string path)
         {
             var client = new MongoClient("mongodb://localhost");
             var database = client.GetDatabase("Images321");
             var gridFS = new GridFSBucket(database);
-            using (FileStream fs = new FileStream($"{Directory.CreateDirectory(Directory.GetCurrentDirectory() + "/Images/")}DeserializedBall.jpg", FileMode.CreateNew))
+            using (FileStream fs = new FileStream(path, FileMode.CreateNew))
             {
-                gridFS.DownloadToStreamByName("sss.jpg", fs);
+                gridFS.DownloadToStreamByName(user.pathImg.Substring(7), fs);
             }
         }
     }

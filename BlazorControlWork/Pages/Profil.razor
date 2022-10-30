@@ -4,6 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject IWebHostEnvironment Environment
 
+
 <div>
     @if (UserService.user.pathImg != string.Empty)
     {
@@ -46,9 +47,11 @@
         try
         {
             var path = Path.Combine(Environment.ContentRootPath, "wwwroot", "images" , e.File.Name);
-            await using FileStream fs = new(path, FileMode.Create);
-            await e.File.OpenReadStream().CopyToAsync(fs);
-            FileSystemService.UploadImageToDb(e.File.Name, fs);
+            using (FileStream fs = new(path, FileMode.Create))
+            {
+                await e.File.OpenReadStream(1000000000).CopyToAsync(fs);
+            }
+            FileSystemService.UploadImageToDb(e.File.Name, path);
             srcPath = "images\\" + $"{e.File.Name}";
             UserService.user.pathImg = srcPath;
             MongoExamples.ReplaceByName(UserService.user.Login, UserService.user);
@@ -57,5 +60,18 @@
         {
             strException = $"{ex.Message}";
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        if (UserService.user.pathImg != null)
+        {
+            var path = Path.Combine(Environment.ContentRootPath, "wwwroot", UserService.user.pathImg);
+            if (!File.Exists(path))
+            {
+                FileSystemService.DownloadToLocal(UserService.user, path);
+            }
+        }
+        
     }
 }
