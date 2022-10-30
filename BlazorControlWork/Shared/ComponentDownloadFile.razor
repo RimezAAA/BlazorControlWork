@@ -1,0 +1,61 @@
+﻿@using BlazorControlWork.Data
+@inject IWebHostEnvironment Environment
+<input type="number" @bind="@countFiles"></input>
+<InputFile OnChange="@LoadFiles" multiple />
+@if (isLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>type</th>
+                <th>Btn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var file in loadedFiles)
+            {
+                <tr>
+                    <td>@file.Name</td>
+                    <td>@file.Size</td>
+                    <td>@file.ContentType</td>
+                    <td><button @onclick="(() => AddFiles(file))">Add</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    int countFiles;
+    private List<IBrowserFile> loadedFiles = new();
+    private bool isLoading;
+
+    private async Task AddFiles(IBrowserFile file)
+    {
+        var path = Path.Combine(Environment.ContentRootPath, "wwwroot", "files", file.Name);
+        using (FileStream fs = new(path, FileMode.Create))
+        {
+            await file.OpenReadStream(1000000000).CopyToAsync(fs);
+        }
+        FileService.UploadImageToDb(file.Name, path);
+        loadedFiles.Remove(file);
+        //File.Delete(path);
+    }
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        loadedFiles.Clear();
+        isLoading = true;
+        foreach (var file in e.GetMultipleFiles(countFiles))
+        {
+            loadedFiles.Add(file);
+        }
+        isLoading = false;
+    }
+}
